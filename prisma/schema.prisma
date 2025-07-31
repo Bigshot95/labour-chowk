@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  name        String
+  phone       String   @unique
+  role        Role     @default(CUSTOMER)
+  isVerified  Boolean  @default(false)
+  address     String?
+  pincode     String?
+  language    String   @default("en")
+  createdAt   DateTime @default(now())
+  
+  workerProfile    WorkerProfile?
+  sentMessages     Message[] @relation("Sender")
+  receivedMessages Message[] @relation("Receiver")
+  customerBookings Booking[] @relation("Customer")
+  workerBookings   Booking[] @relation("Worker")
+  reviews          Review[]
+}
+
+model WorkerProfile {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  age          Int
+  aadhaar      String
+  profilePic   String?
+  skills       String
+  experience   String
+  dailyRate    Float
+  hourlyRate   Float
+  projectRate  Float
+  availability String
+  portfolio    String
+  rating       Float    @default(0)
+  totalJobs    Int      @default(0)
+  isAvailable  Boolean  @default(true)
+  createdAt    DateTime @default(now())
+}
+
+model Booking {
+  id             String        @id @default(cuid())
+  customerId     String
+  workerId       String
+  customer       User          @relation("Customer", fields: [customerId], references: [id])
+  worker         User          @relation("Worker", fields: [workerId], references: [id])
+  jobDescription String
+  workDate       DateTime
+  workTime       String
+  location       String
+  pincode        String
+  amount         Float
+  status         BookingStatus @default(PENDING)
+  createdAt      DateTime      @default(now())
+  review         Review?
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  sender     User     @relation("Sender", fields: [senderId], references: [id])
+  receiver   User     @relation("Receiver", fields: [receiverId], references: [id])
+  content    String
+  timestamp  DateTime @default(now())
+  isRead     Boolean  @default(false)
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  bookingId String   @unique
+  booking   Booking  @relation(fields: [bookingId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  CUSTOMER
+  WORKER
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
