@@ -31,11 +31,14 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/workers" className="text-gray-700 hover:text-orange-600 transition-colors">
-              Find Workers
+            <Link href="/jobs/browse" className="text-gray-700 hover:text-orange-600 transition-colors">
+              Browse Jobs
             </Link>
             <Link href="/how-it-works" className="text-gray-700 hover:text-orange-600 transition-colors">
               How it Works
+            </Link>
+            <Link href="/safety" className="text-gray-700 hover:text-orange-600 transition-colors">
+              AI Safety
             </Link>
             <Link href="/contact" className="text-gray-700 hover:text-orange-600 transition-colors">
               Contact
@@ -71,10 +74,10 @@ export function Header() {
               </div>
             ) : (
               <div className="flex items-center space-x-2">
-                <Link href="/auth/login">
+                <Link href="/auth/signin">
                   <Button variant="ghost">Login</Button>
                 </Link>
-                <Link href="/auth/register">
+                <Link href="/auth/signup">
                   <Button className="bg-orange-600 hover:bg-orange-700">
                     Register
                   </Button>
@@ -104,7 +107,7 @@ export function Header() {
                 className="text-gray-700 hover:text-orange-600 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Find Workers
+                Browse Jobs
               </Link>
               <Link 
                 href="/how-it-works" 
@@ -112,6 +115,13 @@ export function Header() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 How it Works
+              </Link>
+              <Link 
+                href="/safety" 
+                className="text-gray-700 hover:text-orange-600 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                AI Safety
               </Link>
               <Link 
                 href="/contact" 
@@ -145,10 +155,10 @@ export function Header() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <Link href="/auth/login" onClick={() => setIsMenuOpen(false)}>
+                    <Link href="/auth/signin" onClick={() => setIsMenuOpen(false)}>
                       <Button variant="ghost" className="w-full">Login</Button>
                     </Link>
-                    <Link href="/auth/register" onClick={() => setIsMenuOpen(false)}>
+                    <Link href="/auth/signup" onClick={() => setIsMenuOpen(false)}>
                       <Button className="w-full bg-orange-600 hover:bg-orange-700">
                         Register
                       </Button>

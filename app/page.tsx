@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Search, Users, MessageCircle, CheckCircle, Star, ArrowRight, Phone, MapPin } from 'lucide-react'
+import { Search, Users, MessageCircle, CheckCircle, Star, ArrowRight, Phone, MapPin, Shield, Zap, Clock } from 'lucide-react'
 import { SKILLS, TRANSLATIONS } from '@/lib/constants'
 import { useAuthStore } from '@/lib/store'
 
@@ -32,11 +32,11 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-              {t.findWorkers}
+              Digital Labour Chowk
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Connect with skilled daily wage workers in your area. From carpentry to plumbing, 
-              find reliable professionals for all your needs.
+              AI-Powered Safety First Platform. Connect with verified skilled workers through 
+              our innovative sobriety verification system powered by Gemini AI.
             </p>
 
             {/* Search Bar */}
@@ -79,16 +79,16 @@ export default function HomePage() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/workers">
+              <Link href="/auth/signup?type=buyer">
                 <Button size="lg" className="bg-orange-600 hover:bg-orange-700 px-8">
                   <Users className="w-5 h-5 mr-2" />
-                  {t.hireWorker}
+                  Post a Job
                 </Button>
               </Link>
-              <Link href="/auth/register?role=worker">
+              <Link href="/auth/signup?type=worker">
                 <Button size="lg" variant="outline" className="border-green-600 text-green-600 hover:bg-green-50 px-8">
                   <CheckCircle className="w-5 h-5 mr-2" />
-                  {t.joinAsWorker}
+                  Find Work
                 </Button>
               </Link>
             </div>
@@ -101,10 +101,10 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              How Labour Chowk Works
+              How Digital Labour Chowk Works
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Simple steps to connect with skilled workers or find work opportunities
+              AI-powered safety verification ensures reliable and secure work connections
             </p>
           </div>
 
@@ -113,14 +113,14 @@ export default function HomePage() {
             <Card className="text-center border-none shadow-lg">
               <CardHeader>
                 <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Search className="w-8 h-8 text-orange-600" />
+                  <Users className="w-8 h-8 text-orange-600" />
                 </div>
-                <CardTitle>1. Search & Browse</CardTitle>
+                <CardTitle>1. Post or Find Jobs</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  Search for workers by skill, location, and budget. Browse profiles, 
-                  ratings, and portfolios to find the perfect match.
+                  Buyers post job requirements with auto-assignment or manual worker selection. 
+                  Workers browse available opportunities in their area.
                 </CardDescription>
               </CardContent>
             </Card>
@@ -128,15 +128,15 @@ export default function HomePage() {
             {/* Step 2 */}
             <Card className="text-center border-none shadow-lg">
               <CardHeader>
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MessageCircle className="w-8 h-8 text-blue-600" />
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Shield className="w-8 h-8 text-red-600" />
                 </div>
-                <CardTitle>2. Connect & Discuss</CardTitle>
+                <CardTitle>2. AI Safety Verification</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  Message workers directly to discuss your requirements, timeline, 
-                  and pricing. Get quotes and clarify details.
+                  Workers complete a 15-second video sobriety check analyzed by Gemini AI 
+                  before starting work. Ensures safety and professionalism.
                 </CardDescription>
               </CardContent>
             </Card>
@@ -145,14 +145,14 @@ export default function HomePage() {
             <Card className="text-center border-none shadow-lg">
               <CardHeader>
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle className="w-8 h-8 text-green-600" />
+                  <Zap className="w-8 h-8 text-green-600" />
                 </div>
-                <CardTitle>3. Hire & Complete</CardTitle>
+                <CardTitle>3. Smart Work Management</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  Book the worker, track progress, and make secure payments. 
-                  Rate and review after completion.
+                  Real-time job tracking, progress updates, and secure payments. 
+                  AI-powered matching ensures optimal worker-job pairing.
                 </CardDescription>
               </CardContent>
             </Card>
@@ -205,48 +205,48 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose Labour Chowk?
+              Why Choose Digital Labour Chowk?
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Phone className="w-8 h-8 text-orange-600" />
+                <Shield className="w-8 h-8 text-orange-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Verified Workers</h3>
+              <h3 className="text-xl font-semibold mb-2">AI Safety First</h3>
               <p className="text-gray-600">
-                All workers are verified with Aadhaar and background checks
+                Gemini AI-powered sobriety verification ensures worker safety and reliability
               </p>
             </div>
 
             <div className="text-center">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MapPin className="w-8 h-8 text-green-600" />
+                <Zap className="w-8 h-8 text-green-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Local Workers</h3>
+              <h3 className="text-xl font-semibold mb-2">Smart Matching</h3>
               <p className="text-gray-600">
-                Find workers in your area for quick and convenient service
+                AI algorithm matches workers to jobs based on skills, location, and ratings
               </p>
             </div>
 
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Star className="w-8 h-8 text-blue-600" />
+                <Clock className="w-8 h-8 text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Rated & Reviewed</h3>
+              <h3 className="text-xl font-semibold mb-2">Real-time Tracking</h3>
               <p className="text-gray-600">
-                Check ratings and reviews from previous customers
+                Live job status updates, progress tracking, and instant notifications
               </p>
             </div>
 
             <div className="text-center">
               <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MessageCircle className="w-8 h-8 text-purple-600" />
+                <CheckCircle className="w-8 h-8 text-purple-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Direct Communication</h3>
+              <h3 className="text-xl font-semibold mb-2">Verified Professionals</h3>
               <p className="text-gray-600">
-                Chat directly with workers to discuss your requirements
+                All workers verified with government ID and background checks
               </p>
             </div>
           </div>
@@ -257,20 +257,20 @@ export default function HomePage() {
       <section className="py-20 bg-gradient-to-r from-orange-600 to-green-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Ready to Get Started?
+            Experience the Future of Labour Services
           </h2>
           <p className="text-xl text-orange-100 mb-8">
-            Join thousands of satisfied customers and skilled workers on Labour Chowk
+            Join the AI-powered platform that prioritizes safety, efficiency, and reliability
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/auth/register?role=customer">
+            <Link href="/auth/signup?type=buyer">
               <Button size="lg" variant="secondary" className="px-8">
-                Find Workers Now
+                Post Your First Job
               </Button>
             </Link>
-            <Link href="/auth/register?role=worker">
+            <Link href="/auth/signup?type=worker">
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-orange-600 px-8">
-                Start Earning Today
+                Join as Verified Worker
               </Button>
             </Link>
           </div>
