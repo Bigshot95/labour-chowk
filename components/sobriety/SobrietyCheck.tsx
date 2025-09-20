@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useRef, useCallback } from 'react'
-import Webcam from 'react-webcam'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -18,31 +17,51 @@ interface SobrietyCheckProps {
 }
 
 export function SobrietyCheck({ jobAssignmentId, workerId, onComplete }: SobrietyCheckProps) {
-  const webcamRef = useRef<Webcam>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const [isRecording, setIsRecording] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [recordedChunks, setRecordedChunks] = useState<Blob[]>([])
-  const [step, setStep] = useState<'instructions' | 'recording' | 'analysis' | 'result'>('instructions')
+  const [step, setStep] = useState<'instructions' | 'camera' | 'recording' | 'analysis' | 'result'>('instructions')
   const [result, setResult] = useState<any>(null)
+  const [stream, setStream] = useState<MediaStream | null>(null)
   const { toast } = useToast()
 
-  const handleDataAvailable = useCallback(
-    ({ data }: { data: Blob }) => {
-      if (data.size > 0) {
-        setRecordedChunks((prev) => prev.concat(data))
+  const startCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ 
+        video: true, 
+        audio: false 
+      })
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream
       }
-    },
-    [setRecordedChunks]
-  )
+      
+      setStream(mediaStream)
+      setStep('camera')
+    } catch (error) {
+      toast({
+        title: 'Camera Error',
+        description: 'Unable to access camera. Please check permissions.',
+        variant: 'destructive'
+      })
+    }
+  }
 
   const handleStartRecording = useCallback(() => {
-    if (webcamRef.current && webcamRef.current.stream) {
+    if (stream) {
       setRecordedChunks([])
-      mediaRecorderRef.current = new MediaRecorder(webcamRef.current.stream, {
+      mediaRecorderRef.current = new MediaRecorder(stream, {
         mimeType: 'video/webm'
       })
-      mediaRecorderRef.current.addEventListener('dataavailable', handleDataAvailable)
+      
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          setRecordedChunks(prev => [...prev, event.data])
+        }
+      }
+      
       mediaRecorderRef.current.start()
       setIsRecording(true)
       setStep('recording')
@@ -52,15 +71,15 @@ export function SobrietyCheck({ jobAssignmentId, workerId, onComplete }: Sobriet
         handleStopRecording()
       }, 15000)
     }
-  }, [webcamRef, setIsRecording, mediaRecorderRef, handleDataAvailable])
+  }, [stream])
 
   const handleStopRecording = useCallback(() => {
-    if (mediaRecorderRef.current) {
+    if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop()
       setIsRecording(false)
       setStep('analysis')
     }
-  }, [mediaRecorderRef, setIsRecording])
+  }, [isRecording])
 
   const handleAnalyzeVideo = useCallback(async () => {
     if (recordedChunks.length === 0) return
@@ -98,6 +117,12 @@ export function SobrietyCheck({ jobAssignmentId, workerId, onComplete }: Sobriet
     setRecordedChunks([])
     setResult(null)
     setStep('instructions')
+    
+    // Stop camera stream
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop())
+      setStream(null)
+    }
   }
 
   const getStatusIcon = (status: string) => {
@@ -235,23 +260,22 @@ export function SobrietyCheck({ jobAssignmentId, workerId, onComplete }: Sobriet
               </ul>
             </div>
 
-            <Button onClick={() => setStep('recording')} className="w-full">
+            <Button onClick={startCamera} className="w-full">
               <Camera className="w-4 h-4 mr-2" />
               Start Camera
             </Button>
           </div>
         )}
 
-        {(step === 'recording' || step === 'analysis') && (
+        {(step === 'camera' || step === 'recording') && (
           <div className="space-y-4">
             <div className="relative">
-              <Webcam
-                ref={webcamRef}
-                audio={false}
-                width={400}
-                height={300}
-                screenshotFormat="image/jpeg"
+              <video
+                ref={videoRef}
+                autoPlay
+                muted
                 className="w-full rounded-lg"
+                style={{ maxHeight: '300px' }}
               />
               
               {isRecording && (
@@ -261,26 +285,32 @@ export function SobrietyCheck({ jobAssignmentId, workerId, onComplete }: Sobriet
               )}
             </div>
 
-            {step === 'recording' && !isRecording && (
+            {step === 'camera' && !isRecording && (
               <Button onClick={handleStartRecording} className="w-full">
                 <Camera className="w-4 h-4 mr-2" />
                 Start Recording
               </Button>
             )}
 
-            {step === 'analysis' && (
-              <div className="text-center space-y-4">
-                {isAnalyzing ? (
-                  <div>
-                    <LoadingSpinner size="lg" className="mx-auto mb-2" />
-                    <p className="text-sm text-gray-600">Analyzing video...</p>
-                  </div>
-                ) : (
-                  <Button onClick={handleAnalyzeVideo} className="w-full">
-                    Analyze Recording
-                  </Button>
-                )}
+            {isRecording && (
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Recording... Stay still and look at the camera</p>
               </div>
+            )}
+          </div>
+        )}
+
+        {step === 'analysis' && (
+          <div className="text-center space-y-4">
+            {isAnalyzing ? (
+              <div>
+                <LoadingSpinner size="lg" className="mx-auto mb-2" />
+                <p className="text-sm text-gray-600">Analyzing video with AI...</p>
+              </div>
+            ) : (
+              <Button onClick={handleAnalyzeVideo} className="w-full">
+                Analyze Recording
+              </Button>
             )}
           </div>
         )}

@@ -1,7 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
-
+// Mock Gemini AI service for development
 export interface SobrietyAnalysis {
   sobriety_status: 'PASS' | 'FAIL' | 'UNCERTAIN'
   confidence_score: number
@@ -11,53 +8,39 @@ export interface SobrietyAnalysis {
 }
 
 export async function analyzeSobrietyVideo(videoBase64: string): Promise<SobrietyAnalysis> {
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' })
-
-  const prompt = `
-Analyze this video frame of a worker for signs of intoxication or impairment.
-
-ASSESSMENT CRITERIA:
-- Eye condition: Check for bloodshot, glazed, or unfocused eyes
-- Facial expressions: Look for drowsiness, confusion, or lack of alertness  
-- Body posture: Assess stability, swaying, or unsteady stance
-- Overall alertness: Evaluate responsiveness and cognitive awareness
-- Hand steadiness: Check for tremors or uncontrolled movements
-
-RESPONSE FORMAT (JSON only):
-{
-  "sobriety_status": "PASS/FAIL/UNCERTAIN",
-  "confidence_score": 0.95,
-  "detected_signs": ["bloodshot_eyes", "unsteady_posture"],
-  "safety_recommendation": "APPROVE_FOR_WORK/REQUIRE_RETEST/DENY_ASSIGNMENT",
-  "additional_notes": "Worker appears alert and stable"
-}
-
-IMPORTANT: This is for worker safety and job site security. Be thorough but fair in assessment.
-`
-
-  try {
-    const result = await model.generateContent([
-      prompt,
-      {
-        inlineData: {
-          mimeType: 'video/mp4',
-          data: videoBase64
-        }
-      }
-    ])
-
-    const response = await result.response
-    const text = response.text()
-    
-    // Extract JSON from response
-    const jsonMatch = text.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) {
-      throw new Error('Invalid response format from Gemini')
+  // Mock implementation for development
+  // In production, this would call the actual Gemini AI API
+  
+  console.log('Analyzing video with mock Gemini AI...')
+  
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 2000))
+  
+  // Mock analysis result (randomly pass/fail for demo)
+  const mockResults: SobrietyAnalysis[] = [
+    {
+      sobriety_status: 'PASS',
+      confidence_score: 0.92,
+      detected_signs: [],
+      safety_recommendation: 'APPROVE_FOR_WORK',
+      additional_notes: 'Worker appears alert and stable. No signs of impairment detected.'
+    },
+    {
+      sobriety_status: 'FAIL',
+      confidence_score: 0.85,
+      detected_signs: ['bloodshot_eyes', 'unsteady_posture'],
+      safety_recommendation: 'DENY_ASSIGNMENT',
+      additional_notes: 'Signs of potential impairment detected. Worker should not start work at this time.'
+    },
+    {
+      sobriety_status: 'UNCERTAIN',
+      confidence_score: 0.65,
+      detected_signs: ['unclear_visibility'],
+      safety_recommendation: 'REQUIRE_RETEST',
+      additional_notes: 'Video quality insufficient for reliable analysis. Please retake the test.'
     }
-
-    return JSON.parse(jsonMatch[0])
-  } catch (error) {
-    console.error('Gemini analysis error:', error)
-    throw new Error('Failed to analyze sobriety video')
-  }
+  ]
+  
+  // Return random result for demo
+  return mockResults[Math.floor(Math.random() * mockResults.length)]
 }

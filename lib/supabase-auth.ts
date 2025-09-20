@@ -1,120 +1,67 @@
-import { supabase } from './supabase'
-import { Database } from './database.types'
-
-type User = Database['public']['Tables']['users']['Row']
-type UserInsert = Database['public']['Tables']['users']['Insert']
-
-export interface AuthUser extends User {
-  worker_profile?: Database['public']['Tables']['workers']['Row']
+// Mock authentication service for development
+export interface AuthUser {
+  id: string
+  user_type: 'buyer' | 'worker' | 'admin'
+  full_name: string
+  phone_number: string
+  email?: string
+  verification_status: string
 }
 
-export async function signUpWithPhone(phoneNumber: string, password: string, userData: Omit<UserInsert, 'id'>) {
-  try {
-    // Sign up with Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      phone: phoneNumber,
-      password: password,
-    })
-
-    if (authError) throw authError
-
-    if (authData.user) {
-      // Create user profile
-      const { data: userProfile, error: profileError } = await supabase
-        .from('users')
-        .insert([{
-          id: authData.user.id,
-          phone_number: phoneNumber,
-          ...userData
-        }])
-        .select()
-        .single()
-
-      if (profileError) throw profileError
-
-      return { user: userProfile, session: authData.session }
-    }
-
-    throw new Error('User creation failed')
-  } catch (error) {
-    console.error('Sign up error:', error)
-    throw error
+export async function signUpWithPhone(phoneNumber: string, password: string, userData: any) {
+  console.log('Mock signup:', { phoneNumber, userData })
+  
+  // Mock successful signup
+  const mockUser: AuthUser = {
+    id: 'mock-user-' + Date.now(),
+    user_type: userData.user_type,
+    full_name: userData.full_name,
+    phone_number: phoneNumber,
+    email: userData.email,
+    verification_status: 'pending'
+  }
+  
+  return {
+    user: mockUser,
+    session: { access_token: 'mock-token' }
   }
 }
 
 export async function signInWithPhone(phoneNumber: string, password: string) {
-  try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      phone: phoneNumber,
-      password: password,
-    })
-
-    if (error) throw error
-
-    if (data.user) {
-      // Fetch user profile
-      const { data: userProfile, error: profileError } = await supabase
-        .from('users')
-        .select(`
-          *,
-          workers (*)
-        `)
-        .eq('id', data.user.id)
-        .single()
-
-      if (profileError) throw profileError
-
-      return { user: userProfile, session: data.session }
-    }
-
-    throw new Error('Sign in failed')
-  } catch (error) {
-    console.error('Sign in error:', error)
-    throw error
+  console.log('Mock signin:', { phoneNumber })
+  
+  // Mock successful signin
+  const mockUser: AuthUser = {
+    id: 'mock-user-signin',
+    user_type: 'buyer',
+    full_name: 'Test User',
+    phone_number: phoneNumber,
+    verification_status: 'verified'
+  }
+  
+  return {
+    user: mockUser,
+    session: { access_token: 'mock-token' }
   }
 }
 
 export async function signOut() {
-  const { error } = await supabase.auth.signOut()
-  if (error) throw error
+  console.log('Mock signout')
+  return Promise.resolve()
 }
 
 export async function getCurrentUser(): Promise<AuthUser | null> {
-  try {
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (!user) return null
-
-    const { data: userProfile, error } = await supabase
-      .from('users')
-      .select(`
-        *,
-        workers (*)
-      `)
-      .eq('id', user.id)
-      .single()
-
-    if (error) throw error
-
-    return userProfile as AuthUser
-  } catch (error) {
-    console.error('Get current user error:', error)
-    return null
+  // Mock current user for development
+  return {
+    id: 'mock-current-user',
+    user_type: 'buyer',
+    full_name: 'Current User',
+    phone_number: '+919876543210',
+    verification_status: 'verified'
   }
 }
 
 export async function verifyPhoneOTP(phone: string, token: string) {
-  try {
-    const { data, error } = await supabase.auth.verifyOtp({
-      phone,
-      token,
-      type: 'sms'
-    })
-
-    if (error) throw error
-    return data
-  } catch (error) {
-    console.error('OTP verification error:', error)
-    throw error
-  }
+  console.log('Mock OTP verification:', { phone, token })
+  return Promise.resolve({ user: { phone } })
 }
